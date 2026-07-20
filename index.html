@@ -148,14 +148,11 @@ footer{
     <span>📅 <strong>October 21, 2026</strong></span>
     <span>📍 <strong>Maastricht University</strong>, The Netherlands</span>
   </div>
-  <!-- Signature: Gaussian-process mean with confidence band and sample points -->
-  <svg class="gp" viewBox="0 0 760 70" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="none">
-    <path d="M0,45 C80,20 140,60 220,38 C300,16 360,52 440,30 C520,10 600,48 680,28 C720,18 745,25 760,22 L760,62 C745,58 720,52 680,55 C600,62 520,40 440,58 C360,72 300,44 220,62 C140,78 80,50 0,68 Z" fill="#1f6f8b" opacity="0.10"/>
-    <path d="M0,56 C80,35 140,69 220,50 C300,30 360,62 440,44 C520,25 600,55 680,41 C720,34 745,41 760,42" fill="none" stroke="#1f6f8b" stroke-width="2"/>
-    <circle cx="150" cy="59" r="3.5" fill="#1c2733"/>
-    <circle cx="330" cy="49" r="3.5" fill="#1c2733"/>
-    <circle cx="520" cy="41" r="3.5" fill="#1c2733"/>
-    <circle cx="655" cy="43" r="3.5" fill="#1f6f8b"/>
+  <!-- Signature: live Bayesian Optimization loop — sequential sampling + updated GP estimates -->
+  <svg class="gp" id="gp-anim" viewBox="0 0 760 90" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="none">
+    <path id="gp-band" fill="#1f6f8b" opacity="0.12" d=""/>
+    <path id="gp-mean" fill="none" stroke="#1f6f8b" stroke-width="2" d=""/>
+    <g id="gp-pts"></g>
   </svg>
 </header>
 
@@ -249,5 +246,99 @@ footer{
   BOW 26 · Bayesian Optimization Workshop · <a href="https://www.maastrichtuniversity.nl/bnaic2026">BNAIC/BeNeLearn 2026</a> · Maastricht University
 </footer>
 
+<script>
+(function(){
+  var svg=document.getElementById('gp-anim');if(!svg)return;
+  var W=760,H=90,PAD=8,N=140;
+  var band=document.getElementById('gp-band'),mean=document.getElementById('gp-mean'),ptsG=document.getElementById('gp-pts');
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // hidden objective (what BO is searching for)
+  function f(x){return 0.42*Math.sin(9.2*x+0.4)+0.28*Math.sin(23*x+1.7)+0.12*Math.cos(4*x);}
+  function yMap(v){var y=H/2-v*(H/2-PAD)/1.1;return Math.max(PAD,Math.min(H-PAD,y));}
+
+  var xs=[];for(var i=0;i<N;i++)xs.push(i/(N-1));
+
+  // GP with RBF kernel
+  var ell=0.11,sf2=0.32,noise=1e-5;
+  function k(a,b){var d=(a-b)/ell;return sf2*Math.exp(-0.5*d*d);}
+  function solve(A,B){ // gaussian elimination, A n×n, B n×m -> X n×m
+    var n=A.length,m=B[0].length,M=A.map(function(r,i){return r.concat(B[i]);});
+    for(var c=0;c<n;c++){var piv=c;for(var r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[piv][c]))piv=r;
+      var t=M[c];M[c]=M[piv];M[piv]=t;
+      for(var r2=c+1;r2<n;r2++){var fac=M[r2][c]/M[c][c];for(var c2=c;c2<n+m;c2++)M[r2][c2]-=fac*M[c][c2];}}
+    var X=[];for(var i2=0;i2<n;i2++)X.push(new Array(m).fill(0));
+    for(var c3=0;c3<m;c3++)for(var r3=n-1;r3>=0;r3--){var sum=M[r3][n+c3];
+      for(var c4=r3+1;c4<n;c4++)sum-=M[r3][c4]*X[c4][c3];X[r3][c3]=sum/M[r3][r3];}
+    return X;}
+  function posterior(X,Y){
+    var n=X.length,Km=[];
+    for(var i=0;i<n;i++){Km.push([]);for(var j=0;j<n;j++)Km[i].push(k(X[i],X[j])+(i===j?noise:0));}
+    var Ycol=Y.map(function(v){return [v];});
+    var alpha=solve(Km.map(function(r){return r.slice();}),Ycol);
+    var mu=[],sd=[];
+    for(var g=0;g<N;g++){var ks=[],mv=0;
+      for(var i2=0;i2<n;i2++){ks.push(k(xs[g],X[i2]));mv+=ks[i2]*alpha[i2][0];}
+      var v=solve(Km.map(function(r){return r.slice();}),ks.map(function(kv){return [kv];}));
+      var varg=sf2;for(var i3=0;i3<n;i3++)varg-=ks[i3]*v[i3][0];
+      mu.push(mv);sd.push(Math.sqrt(Math.max(varg,1e-9)));}
+    return {mu:mu,sd:sd};}
+
+  function paths(mu,sd){
+    var m='M',up='M',lo='';
+    for(var i=0;i<N;i++){var x=(xs[i]*W).toFixed(1);
+      m+=(i?'L':'')+x+','+yMap(mu[i]).toFixed(1);
+      up+=(i?'L':'')+x+','+yMap(mu[i]+2*sd[i]).toFixed(1);}
+    for(var j=N-1;j>=0;j--){var x2=(xs[j]*W).toFixed(1);
+      lo+='L'+x2+','+yMap(mu[j]-2*sd[j]).toFixed(1);}
+    return {mean:m,band:up+lo+'Z'};}
+
+  var X=[],Y=[],cur=null,MAXPTS=8,timer=null;
+
+  function drawPts(){
+    ptsG.innerHTML='';
+    for(var i=0;i<X.length;i++){var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx',(X[i]*W).toFixed(1));c.setAttribute('cy',yMap(Y[i]).toFixed(1));
+      c.setAttribute('r',3.5);c.setAttribute('fill',i===X.length-1?'#1f6f8b':'#1c2733');
+      ptsG.appendChild(c);}}
+
+  function render(post){mean.setAttribute('d',paths(post.mu,post.sd).mean);
+    band.setAttribute('d',paths(post.mu,post.sd).band);}
+
+  function animateTo(post,dur){
+    if(reduced||!cur){render(post);cur=post;return;}
+    var from=cur,t0=null;
+    function step(ts){if(!t0)t0=ts;var t=Math.min((ts-t0)/dur,1),e=t*(2-t);
+      var mu=[],sd=[];
+      for(var i=0;i<N;i++){mu.push(from.mu[i]+(post.mu[i]-from.mu[i])*e);
+        sd.push(from.sd[i]+(post.sd[i]-from.sd[i])*e);}
+      render({mu:mu,sd:sd});
+      if(t<1)requestAnimationFrame(step);else cur=post;}
+    requestAnimationFrame(step);}
+
+  function nextSample(post){ // UCB acquisition
+    var best=-1,bi=0;
+    for(var i=0;i<N;i++){var tooClose=X.some(function(xv){return Math.abs(xv-xs[i])<0.04;});
+      if(tooClose)continue;
+      var a=post.mu[i]+2*post.sd[i];
+      if(a>best){best=a;bi=i;}}
+    return xs[bi];}
+
+  function reset(){X=[0.12,0.83];Y=X.map(f);
+    var post=posterior(X,Y);drawPts();
+    if(cur)animateTo(post,600);else{render(post);cur=post;}}
+
+  function tick(){
+    if(X.length>=MAXPTS){reset();return;}
+    var xn=nextSample(cur);X.push(xn);Y.push(f(xn));
+    drawPts();animateTo(posterior(X,Y),650);}
+
+  reset();
+  if(!reduced)timer=setInterval(tick,1700);
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden){if(timer)clearInterval(timer);timer=null;}
+    else if(!timer&&!reduced)timer=setInterval(tick,1700);});
+})();
+</script>
 </body>
 </html>
