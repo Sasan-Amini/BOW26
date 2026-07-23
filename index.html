@@ -95,6 +95,29 @@ ul.orgs{list-style:none;font-size:.95rem}
 ul.orgs li{padding:.45rem 0}
 ul.orgs .aff{color:var(--ink-soft)}
 
+.submit-cta{
+  display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;margin-top:1.6rem;
+}
+.btn-submit{
+  display:inline-block;background:var(--accent);color:#fcfcfa;
+  font-size:.92rem;font-weight:600;letter-spacing:.04em;
+  padding:.72rem 1.5rem;border-radius:4px;
+  transition:background .2s ease,transform .2s ease;
+}
+.btn-submit:hover{background:#175a72;text-decoration:none;transform:translateY(-1px)}
+.submit-cta .via{font-size:.88rem;color:var(--ink-soft)}
+.submit-cta .via a{word-break:break-all}
+
+.note-warn{
+  background:#fdf3f2;border-left:3px solid #c0665c;
+  padding:.95rem 1.15rem;font-size:.88rem;color:var(--ink);
+  margin-top:1.4rem;border-radius:0 4px 4px 0;
+}
+.note-warn strong{display:block;margin-bottom:.45rem;color:#a04f46;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase}
+.note-warn ul{margin:0 0 .55rem 1.1rem;padding:0}
+.note-warn li{margin-bottom:.3rem}
+.note-warn p{margin:0;color:var(--ink);font-size:.88rem}
+
 .notice{
   background:var(--accent-soft);border-left:3px solid var(--accent);
   padding:.9rem 1.1rem;font-size:.92rem;color:var(--ink);
@@ -219,9 +242,18 @@ footer{
   <p><strong style="color:var(--ink)">Extended abstracts</strong> — up to 2 pages (excluding references), suitable for previously published work, ongoing work, or early-stage results.</p>
   <p>Reviews are single-blind: submissions should include authors' names and affiliations, be written in English, and use the <a href="https://www.springer.com/gp/computer-science/lncs/conference-proceedings-guidelines">Springer CCIS/LNCS format</a>, in line with the <a href="https://www.maastrichtuniversity.nl/bnaic2026/call-papers">BNAIC/BeNeLearn 2026 guidelines</a>. Submission implies that at least one author registers for the conference and presents in person.</p>
   <p> <strong style="color:var(--ink)"> Proceedings</strong> — Accepted contributions will be included in the dedicated workshop proceedings, following peer review. We are also exploring the possibility of inviting a selection of full papers to submit extended versions to a journal post-proceedings or special issue. Further details on the publication arrangements will be announced once confirmed.</p>  
-  <div class="notice">
-    <!-- SUBMISSION LINK PLACEHOLDER: replace the line below with the OpenReview link when ready -->
-    The submission portal will open soon. The link will appear here.
+  <div class="submit-cta">
+    <a class="btn-submit" href="https://openreview.net/group?id=BNAIC-BeNeLearn/2026/Workshop/BOW">Submit your work</a>
+    <span class="via">via <a href="https://openreview.net/group?id=BNAIC-BeNeLearn/2026/Workshop/BOW">OpenReview</a></span>
+  </div>
+
+  <div class="note-warn">
+    <strong>Note on OpenReview profiles</strong>
+    <ul>
+      <li>New profiles created with an <em>institutional</em> email are activated automatically.</li>
+      <li>New profiles created without an institutional email go through a moderation process by OpenReview that can take up to two weeks.</li>
+    </ul>
+    <p>If you do not yet have an account, we recommend creating one with your institutional email address well before the deadline.</p>
   </div>
 </section>
 
