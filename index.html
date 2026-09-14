@@ -71,7 +71,7 @@ section p:last-child{margin-bottom:0}
 table.program{width:100%;border-collapse:collapse;font-size:.95rem}
 table.program td{padding:.7rem .5rem .7rem 0;border-bottom:1px solid var(--line);vertical-align:top}
 table.program tr:last-child td{border-bottom:none}
-table.program td.time{width:6.5rem;color:var(--accent);font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+table.program td.time{width:7.6rem;color:var(--accent);font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
 table.program td .sub{color:var(--ink-soft);font-size:.88rem;display:block;margin-top:.15rem}
 
 ul.dates{list-style:none;font-size:.95rem}
@@ -127,6 +127,14 @@ ul.dates .d{width:11rem;font-weight:600;white-space:nowrap;font-variant-numeric:
   margin:.25rem auto 0;
   color:var(--ink-soft);
   font-size:.92rem;
+}
+.speaker-card .talk-title{
+  margin:.7rem auto 0;
+  max-width:30ch;
+  font-family:'Spectral',serif;
+  font-size:.96rem;
+  line-height:1.45;
+  color:var(--ink);
 }
 
 .sponsor{
@@ -233,7 +241,7 @@ footer{
   <h2>About the workshop</h2>
   <p>Bayesian Optimization (BO) is a powerful framework for the global optimization of expensive-to-evaluate black-box functions. It has become an indispensable tool across a wide range of domains, from hyperparameter tuning of machine learning models to industrial process optimization and drug discovery.</p>
   <p>This workshop brings together researchers, engineers, and industry practitioners in a structured yet collaborative environment. It equips newcomers with a solid conceptual grounding, exposes experienced users to diverse application domains, and provides a platform for researchers to share recent methodological developments. The workshop also aims to catalyse the formation of a Benelux-centred network of people actively working with and advancing Bayesian Optimization.</p>
-  <p>No prior knowledge of BO is required to benefit from the introductory tutorial, while the invited and contributed talks are designed to engage experts.</p>
+  <p>The two invited talks offer accessible entry points into the field for newcomers, while the contributed talks present recent methodological developments and applications for experienced users.</p>
 </section>
 
 <section id="speakers">
@@ -243,40 +251,57 @@ footer{
       <img class="speaker-photo" src="images/wauters.jpg" alt="Jolan Wauters">
       <div class="name">Jolan Wauters</div>
       <p class="affiliation">Assistant Professor, KU Leuven</p>
+      <p class="talk-title">Bayesian Optimization: Enabling the First-Time-Right Paradigm for Dynamical Systems</p>
     </article>
     <article class="speaker-card">
       <img class="speaker-photo" src="images/Ivan.png" alt="Ivan De Boi">
       <div class="name">Ivan De Boi</div>
       <p class="affiliation">Postdoctoral Researcher, University of Antwerp</p>
+      <p class="talk-title">Deep Gaussian Processes: Learning Complex Mappings with Uncertainty</p>
     </article>
   </div>
 </section>
 
 <section id="program">
   <h2>Program</h2>
+  <p>Times are elapsed from the start of the workshop.</p>
   <table class="program">
     <tr>
-      <td class="time">45 min</td>
-      <td>Tutorial: Introduction to Bayesian Optimization
-        <span class="sub">Gaussian process surrogates, acquisition functions, and practical implementation (accessible with a basic ML background).</span>
+      <td class="time">00:00&ndash;00:10</td>
+      <td>Opening and welcome</td>
+    </tr>
+    <tr>
+      <td class="time">00:10&ndash;00:50</td>
+      <td>Invited talk: Bayesian Optimization: Enabling the First-Time-Right Paradigm for Dynamical Systems
+        <span class="sub">Jolan Wauters &middot; KU Leuven</span>
       </td>
     </tr>
     <tr>
-      <td class="time">30 min</td>
-      <td>Invited talk: Jolan Wauters</td>
+      <td class="time">00:50&ndash;01:30</td>
+      <td>Invited talk: Deep Gaussian Processes: Learning Complex Mappings with Uncertainty
+        <span class="sub">Ivan De Boi &middot; University of Antwerp</span>
+      </td>
     </tr>
     <tr>
-      <td class="time">30 min</td>
-      <td>Invited talk: Ivan De Boi</td>
-    </tr>
-    <tr>
-      <td class="time">15 min</td>
+      <td class="time">01:30&ndash;01:45</td>
       <td>Break</td>
     </tr>
     <tr>
-      <td class="time">60 min</td>
-      <td>Contributed talks
-        <span class="sub">Short presentations selected from the open call — see Submissions below.</span>
+      <td class="time">01:45&ndash;02:10</td>
+      <td>Benchmarking Surrogate-Based Optimisation, Evolutionary, and Hybrid Algorithms on Real-Life Expensive Multi-Objective Black-Box Problems
+        <span class="sub">Laurens Bliek &middot; Eindhoven University of Technology</span>
+      </td>
+    </tr>
+    <tr>
+      <td class="time">02:10&ndash;02:35</td>
+      <td>Black-box optimization with large language models: what works so far?
+        <span class="sub">Andr&aacute;s Retzler &middot; Ghent University</span>
+      </td>
+    </tr>
+    <tr>
+      <td class="time">02:35&ndash;03:00</td>
+      <td>High-Dimensional, Mixed-Variable Bayesian Optimization using Block-Partitioned Tree-Structured Parzen Estimator (Block-TPE)
+        <span class="sub">Vipul Chalotra &middot; Hasselt University</span>
       </td>
     </tr>
   </table>
